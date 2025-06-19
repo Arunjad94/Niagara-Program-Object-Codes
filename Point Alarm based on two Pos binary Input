@@ -1,0 +1,212 @@
+/* Auto-generated ProgramImpl Code */
+
+import java.util.*;              /* java Predefined*/
+import javax.baja.nre.util.*;    /* nre Predefined*/
+import javax.baja.sys.*;         /* baja Predefined*/
+import javax.baja.status.*;      /* baja Predefined*/
+import javax.baja.util.*;        /* baja Predefined*/
+import com.tridium.program.*;    /* program-rt Predefined*/
+
+public class ProgramImpl
+  extends com.tridium.program.ProgramBase
+{
+
+////////////////////////////////////////////////////////////////
+// Getters
+////////////////////////////////////////////////////////////////
+
+  public int getMd() { return getInt("Md"); }
+  public BStatusBoolean getCmd() { return (BStatusBoolean)get("Cmd"); }
+  public BStatusBoolean getOpnSt() { return (BStatusBoolean)get("OpnSt"); }
+  public BStatusBoolean getClsSt() { return (BStatusBoolean)get("ClsSt"); }
+  public BStatusNumeric getClsAlmDly() { return (BStatusNumeric)get("ClsAlmDly"); }
+  public BStatusNumeric getOpnAlmDly() { return (BStatusNumeric)get("OpnAlmDly"); }
+  public BStatusBoolean getAlmReset() { return (BStatusBoolean)get("AlmReset"); }
+  public BStatusBoolean getAlmType() { return (BStatusBoolean)get("AlmType"); }
+  public int getStInd() { return getInt("StInd"); }
+  public BStatusBoolean getOpnAlm() { return (BStatusBoolean)get("OpnAlm"); }
+  public BStatusBoolean getClsAlm() { return (BStatusBoolean)get("ClsAlm"); }
+  public BStatusBoolean getInvAlm() { return (BStatusBoolean)get("InvAlm"); }
+  public int getAlm() { return getInt("Alm"); }
+
+////////////////////////////////////////////////////////////////
+// Setters
+////////////////////////////////////////////////////////////////
+
+  public void setMd(int v) { setInt("Md", v); }
+  public void setCmd(javax.baja.status.BStatusBoolean v) { set("Cmd", v); }
+  public void setOpnSt(javax.baja.status.BStatusBoolean v) { set("OpnSt", v); }
+  public void setClsSt(javax.baja.status.BStatusBoolean v) { set("ClsSt", v); }
+  public void setClsAlmDly(javax.baja.status.BStatusNumeric v) { set("ClsAlmDly", v); }
+  public void setOpnAlmDly(javax.baja.status.BStatusNumeric v) { set("OpnAlmDly", v); }
+  public void setAlmReset(javax.baja.status.BStatusBoolean v) { set("AlmReset", v); }
+  public void setAlmType(javax.baja.status.BStatusBoolean v) { set("AlmType", v); }
+  public void setStInd(int v) { setInt("StInd", v); }
+  public void setOpnAlm(javax.baja.status.BStatusBoolean v) { set("OpnAlm", v); }
+  public void setClsAlm(javax.baja.status.BStatusBoolean v) { set("ClsAlm", v); }
+  public void setInvAlm(javax.baja.status.BStatusBoolean v) { set("InvAlm", v); }
+  public void setAlm(int v) { setInt("Alm", v); }
+
+////////////////////////////////////////////////////////////////
+// Program Source
+////////////////////////////////////////////////////////////////
+
+  public void onStart() throws Exception
+  {
+    // start up code here
+    
+     Cmd = getCmd().getValue();
+     OpnSt = getOpnSt().getValue();
+     ClsSt = getClsSt().getValue();
+     Md = getMd();
+     onTicket = Clock.schedule(getComponent(), BRelTime.makeSeconds(1), BProgram.execute, null);
+     onTicket.cancel();
+       
+  }
+  
+  
+  public void onExecute() throws Exception
+  {
+    // execute code (set executeOnChange flag on inputs)
+    double inAlm,pmpsOn,outAlm, pmpsCmd,reqStg,stg;
+    boolean pmp1St=false,pmp2AutoAlm=false;
+    
+  if(onTicket.isExpired()){
+             switch(timerType)
+             {
+             case 1:
+             case 2: setClsAlm(new BStatusBoolean(true));
+                     setOpnAlm(new BStatusBoolean(false));
+                     break;
+             case 3: setClsAlm(new BStatusBoolean(false));
+                     setOpnAlm(new BStatusBoolean(true));
+                     break;
+             default: 
+  
+                    break;
+             }
+        }
+         
+    /////////////////////////////////////////////////////////////////////////////StInd
+    if(!getOpnSt().getValue() && getClsSt().getValue()) {setStInd(1);} //Closed=1
+    
+    if(!getOpnSt().getValue() && !getClsSt().getValue()) {setStInd(2);} //moving=2
+    
+    if(getOpnSt().getValue() && !getClsSt().getValue()) {setStInd(3);} //open=3
+    
+    if(getOpnSt().getValue() && getClsSt().getValue()) {setStInd(4);} //invalid=4
+    
+    //////////////////////////////////////////////////////////////////////////////
+  
+    if(getCmd().getValue()!=Cmd){
+          Cmd = getCmd().getValue();
+          onTicket.cancel();
+          timerType =0;
+            if(Cmd && ( getStInd()==1 )){
+                timerType = 3;
+                startAlmTimer(getClsAlmDly());
+                }
+            if(Cmd && ( getStInd()==2 )){
+                timerType = 3;
+                startAlmTimer(getClsAlmDly());
+                }
+            else{
+            if(!Cmd && ( getStInd()==3 )){
+                timerType = 2;
+                startAlmTimer(getOpnAlmDly());
+             }
+            if(!Cmd && ( getStInd()==2 )){
+                timerType = 2;
+                startAlmTimer(getOpnAlmDly());
+             }}
+     }
+                
+  
+    if( (getOpnSt().getValue()!=OpnSt) || (getClsSt().getValue()!=ClsSt) ) {
+          OpnSt = getOpnSt().getValue();
+          ClsSt = getClsSt().getValue();
+          onTicket.cancel();
+          timerType = 0;
+            if( ( OpnSt || !ClsSt ) && !getCmd().getValue()){
+                timerType = 2;
+                startAlmTimer(getOpnAlmDly());
+                }
+            else
+            if( ( !OpnSt || ClsSt ) && getCmd().getValue()){
+                timerType = 3;
+                startAlmTimer(getClsAlmDly());
+            }
+     }
+      
+     if(getStInd() == 4){
+        setClsAlm(new BStatusBoolean(false));
+        setOpnAlm(new BStatusBoolean(false));
+        setInvAlm(new BStatusBoolean(true));
+     }
+     
+      if(getStInd() != 4){
+        if(!getAlmType().getValue()){
+        setInvAlm(new BStatusBoolean(false));
+    }
+    }
+    if ( (getStInd() ==3) && getCmd().getValue() ){
+      if(!getAlmType().getValue()){
+        setClsAlm(new BStatusBoolean(false));
+        setOpnAlm(new BStatusBoolean(false));
+        }
+     }
+     
+    if ( (getStInd() ==1) && !getCmd().getValue() ){
+      if(!getAlmType().getValue()){
+        setClsAlm(new BStatusBoolean(false));
+        setOpnAlm(new BStatusBoolean(false));
+        }
+     }
+   
+     if(getAlmReset().getValue()!=almRst){
+        almRst=getAlmReset().getValue();
+       if(getAlmReset().getValue())
+        {
+        setClsAlm(new BStatusBoolean(getClsAlm().getValue() && (timerType==1 || timerType==2)));
+        setOpnAlm(new BStatusBoolean(getOpnAlm().getValue() && timerType==3));
+        setInvAlm(new BStatusBoolean(getStInd() == 4));
+        }
+        }
+        Md = getMd();
+        System.out.println(Md);
+       if((Md >= 1 && Md<=10)){
+        setClsAlm(new BStatusBoolean(false));
+        setOpnAlm(new BStatusBoolean(false));
+        setInvAlm(new BStatusBoolean(false));
+     }
+     
+       if(!getOpnAlm().getValue() && !getClsAlm().getValue() && !getInvAlm().getValue()){setAlm(1);}
+       if(getOpnAlm().getValue() && !getClsAlm().getValue() && !getInvAlm().getValue()){setAlm(2);}
+       if(!getOpnAlm().getValue() && getClsAlm().getValue() && !getInvAlm().getValue()){setAlm(3);}
+       if(getInvAlm().getValue()){setAlm(4);}
+   }      
+      
+  
+  
+   void startAlmTimer(BStatusNumeric item)
+    {
+    
+      if(!onTicket.isExpired()) onTicket.cancel();
+      onTicket = Clock.schedule(getComponent(), BRelTime.makeSeconds((int)item.getValue()), BProgram.execute, null);
+     
+    }    
+  
+  public void onStop() throws Exception
+  {
+    // shutdown code here
+  }
+  
+  private boolean Cmd=false,almRst=false,OpnSt=true,ClsSt=true;
+  private int timerType=0,Md=0;
+  Clock.Ticket onTicket,pmp1AlmOffTicket,pmp2AlmOffTicket; 
+  
+  
+  
+  
+  
+}
