@@ -1,0 +1,436 @@
+/* Auto-generated ProgramImpl Code */
+
+import java.util.*;              /* java Predefined*/
+import javax.baja.nre.util.*;    /* nre Predefined*/
+import javax.baja.sys.*;         /* baja Predefined*/
+import javax.baja.status.*;      /* baja Predefined*/
+import javax.baja.util.*;        /* baja Predefined*/
+import com.tridium.program.*;    /* program-rt Predefined*/
+import javax.baja.control.*;     /* control User Defined*/
+import javax.baja.space.*;       /* baja User Defined*/
+import javax.baja.bacnet.point.*; /* bacnet-rt User Defined*/
+import com.honeywell.panelbus.point.*; /* clPanelBus-rt User Defined*/
+
+public class ProgramImpl
+  extends com.tridium.program.ProgramBase
+{
+
+////////////////////////////////////////////////////////////////
+// Getters
+////////////////////////////////////////////////////////////////
+
+  public String getEndsWith() { return getString("EndsWith"); }
+  public boolean getHideAll() { return getBoolean("HideAll"); }
+  public boolean getUnhideAll() { return getBoolean("UnhideAll"); }
+  public boolean getHideSpecific() { return getBoolean("HideSpecific"); }
+
+////////////////////////////////////////////////////////////////
+// Setters
+////////////////////////////////////////////////////////////////
+
+  public void setEndsWith(String v) { setString("EndsWith", v); }
+  public void setHideAll(boolean v) { setBoolean("HideAll", v); }
+  public void setUnhideAll(boolean v) { setBoolean("UnhideAll", v); }
+  public void setHideSpecific(boolean v) { setBoolean("HideSpecific", v); }
+
+////////////////////////////////////////////////////////////////
+// Program Source
+////////////////////////////////////////////////////////////////
+
+  public void onStart() throws Exception
+  {
+    // start up code here
+    
+  }
+  
+  public void onExecute() throws Exception
+  {
+    // execute code (set executeOnChange flag on inputs)
+    process(getComponent().getParent().getParentComponent());
+  }
+  
+  public void onStop() throws Exception
+  {
+    // shutdown code here
+  }
+  public void onCustomAction() throws Exception
+  {
+      // Prints the new slot associated with this instance
+     
+  }
+  public void process(BComponent c)
+      throws Exception
+   {
+    
+    
+   int flags=0;
+   BFacets facets;
+   
+   BValue displayNames; 
+   HashMap<String,BFormat> engs = new HashMap<String,BFormat>();
+  
+    
+   if(c instanceof BIWritablePoint && c.getName().endsWith(getEndsWith()) && getHideSpecific() == true && getHideAll() == false && getUnhideAll() == false) 
+         {
+         
+           if (c instanceof BBooleanWritable)
+            {
+                pointBW = (BBooleanWritable)c;
+  
+                // Hide Emergency Action Commands
+                flags = pointBW.getFlags(pointBW.emergencyActive); 
+                pointBW.setFlags(pointBW.emergencyActive, flags | Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.emergencyInactive); 
+                pointBW.setFlags(pointBW.emergencyInactive, flags | Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.emergencyAuto); 
+                pointBW.setFlags(pointBW.emergencyAuto, flags | Flags.HIDDEN);
+              
+                flags = pointBW.getFlags(pointBW.set); 
+                pointBW.setFlags(pointBW.set, flags | Flags.HIDDEN);
+                //
+                flags = pointBW.getFlags(pointBW.active); 
+                pointBW.setFlags(pointBW.active, flags & ~Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.inactive); 
+                pointBW.setFlags(pointBW.inactive, flags & ~Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.emergencyAuto); 
+                pointBW.setFlags(pointBW.auto, flags & ~Flags.HIDDEN);
+                
+                facets = pointBW.getFacets();
+                
+                engs.put("active", BFormat.make(facets.gets("trueText", "active")));
+                engs.put("inactive", BFormat.make(facets.gets("falseText", "inactive")));
+  
+                displayNames= pointBW.get("displayNames");
+                if(displayNames!=null)
+                {
+                   if(displayNames instanceof BNameMap)
+                      pointBW.set("displayNames", BNameMap.make((BNameMap)displayNames, BNameMap.make(engs)));
+                }
+                else{
+                     pointBW.add("displayNames", BNameMap.make(engs));
+                }              
+                 
+            }else{
+             if (c instanceof BNumericWritable){
+             
+                pointNW = (BNumericWritable)c;
+             
+                flags = pointNW.getFlags(pointNW.emergencyOverride); 
+                pointNW.setFlags(pointNW.emergencyOverride, flags | Flags.HIDDEN);
+                      
+                flags = pointNW.getFlags(pointNW.emergencyAuto); 
+                pointNW.setFlags(pointNW.emergencyAuto, flags | Flags.HIDDEN);
+              
+                flags = pointNW.getFlags(pointNW.set); 
+                pointNW.setFlags(pointNW.set, flags | Flags.HIDDEN);
+                //
+                flags = pointNW.getFlags(pointNW.override); 
+                pointNW.setFlags(pointNW.override, flags & ~Flags.HIDDEN);
+                      
+                flags = pointNW.getFlags(pointNW.auto); 
+                pointNW.setFlags(pointNW.auto, flags & ~Flags.HIDDEN);
+            }
+            else
+            {
+            if (c instanceof BEnumWritable)
+            {
+                pointEW = (BEnumWritable)c;
+             
+                flags = pointEW.getFlags(pointEW.emergencyOverride); 
+                pointEW.setFlags(pointEW.emergencyOverride, flags | Flags.HIDDEN);
+                      
+                flags = pointEW.getFlags(pointEW.emergencyAuto); 
+                pointEW.setFlags(pointEW.emergencyAuto, flags | Flags.HIDDEN);
+              
+                flags = pointEW.getFlags(pointEW.set); 
+                pointEW.setFlags(pointEW.set, flags | Flags.HIDDEN);
+                //
+                flags = pointEW.getFlags(pointEW.override); 
+                pointEW.setFlags(pointEW.override, flags & ~Flags.HIDDEN);
+                      
+                flags = pointEW.getFlags(pointEW.auto); 
+                pointEW.setFlags(pointEW.auto, flags & ~Flags.HIDDEN);
+                
+            }
+            }
+         }
+      }
+  //Hide All
+   if(c instanceof BIWritablePoint && c.getName().endsWith(getEndsWith()) && getHideSpecific() == false && getHideAll() == true && getUnhideAll() == false) 
+         {
+         
+           if (c instanceof BBooleanWritable)
+            {
+                pointBW = (BBooleanWritable)c;
+  
+                // Hide Emergency Action Commands
+                flags = pointBW.getFlags(pointBW.emergencyActive); 
+                pointBW.setFlags(pointBW.emergencyActive, flags | Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.emergencyInactive); 
+                pointBW.setFlags(pointBW.emergencyInactive, flags | Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.emergencyAuto); 
+                pointBW.setFlags(pointBW.emergencyAuto, flags | Flags.HIDDEN);
+              
+                flags = pointBW.getFlags(pointBW.set); 
+                pointBW.setFlags(pointBW.set, flags | Flags.HIDDEN);
+                //
+                flags = pointBW.getFlags(pointBW.active); 
+                pointBW.setFlags(pointBW.active, flags | Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.inactive); 
+                pointBW.setFlags(pointBW.inactive, flags | Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.emergencyAuto); 
+                pointBW.setFlags(pointBW.auto, flags | Flags.HIDDEN);             
+                 
+            }else{
+             if (c instanceof BNumericWritable){
+             
+                pointNW = (BNumericWritable)c;
+             
+                flags = pointNW.getFlags(pointNW.emergencyOverride); 
+                pointNW.setFlags(pointNW.emergencyOverride, flags | Flags.HIDDEN);
+                      
+                flags = pointNW.getFlags(pointNW.emergencyAuto); 
+                pointNW.setFlags(pointNW.emergencyAuto, flags | Flags.HIDDEN);
+              
+                flags = pointNW.getFlags(pointNW.set); 
+                pointNW.setFlags(pointNW.set, flags | Flags.HIDDEN);
+                //
+                flags = pointNW.getFlags(pointNW.override); 
+                pointNW.setFlags(pointNW.override, flags | Flags.HIDDEN);
+                      
+                flags = pointNW.getFlags(pointNW.auto); 
+                pointNW.setFlags(pointNW.auto, flags | Flags.HIDDEN);
+            }
+            else
+            {
+            if (c instanceof BEnumWritable)
+            {
+                pointEW = (BEnumWritable)c;
+             
+                flags = pointEW.getFlags(pointEW.emergencyOverride); 
+                pointEW.setFlags(pointEW.emergencyOverride, flags | Flags.HIDDEN);
+                      
+                flags = pointEW.getFlags(pointEW.emergencyAuto); 
+                pointEW.setFlags(pointEW.emergencyAuto, flags | Flags.HIDDEN);
+              
+                flags = pointEW.getFlags(pointEW.set); 
+                pointEW.setFlags(pointEW.set, flags | Flags.HIDDEN);
+                //
+                flags = pointEW.getFlags(pointEW.override); 
+                pointEW.setFlags(pointEW.override, flags | Flags.HIDDEN);
+                      
+                flags = pointEW.getFlags(pointEW.auto); 
+                pointEW.setFlags(pointEW.auto, flags | Flags.HIDDEN);
+            }
+            }
+         }
+      }
+  //Unhide All
+   if(c instanceof BIWritablePoint && c.getName().endsWith(getEndsWith())&& getHideSpecific() == false && getHideAll() == false && getUnhideAll() == true) 
+         {
+         
+           if (c instanceof BBooleanWritable)
+            {
+                pointBW = (BBooleanWritable)c;
+  
+                // Hide Emergency Action Commands
+                flags = pointBW.getFlags(pointBW.emergencyActive); 
+                pointBW.setFlags(pointBW.emergencyActive, flags & ~Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.emergencyInactive); 
+                pointBW.setFlags(pointBW.emergencyInactive, flags & ~Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.emergencyAuto); 
+                pointBW.setFlags(pointBW.emergencyAuto, flags & ~Flags.HIDDEN);
+              
+                flags = pointBW.getFlags(pointBW.set); 
+                pointBW.setFlags(pointBW.set, flags & ~Flags.HIDDEN);
+                //
+                flags = pointBW.getFlags(pointBW.active); 
+                pointBW.setFlags(pointBW.active, flags & ~Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.inactive); 
+                pointBW.setFlags(pointBW.inactive, flags & ~Flags.HIDDEN);
+                
+                flags = pointBW.getFlags(pointBW.emergencyAuto); 
+                pointBW.setFlags(pointBW.auto, flags & ~Flags.HIDDEN);             
+                 
+            }else{
+             if (c instanceof BNumericWritable){
+             
+                pointNW = (BNumericWritable)c;
+             
+                flags = pointNW.getFlags(pointNW.emergencyOverride); 
+                pointNW.setFlags(pointNW.emergencyOverride, flags & ~Flags.HIDDEN);
+                      
+                flags = pointNW.getFlags(pointNW.emergencyAuto); 
+                pointNW.setFlags(pointNW.emergencyAuto, flags & ~Flags.HIDDEN);
+              
+                flags = pointNW.getFlags(pointNW.set); 
+                pointNW.setFlags(pointNW.set, flags & ~Flags.HIDDEN);
+                //
+                flags = pointNW.getFlags(pointNW.override); 
+                pointNW.setFlags(pointNW.override, flags & ~Flags.HIDDEN);
+                      
+                flags = pointNW.getFlags(pointNW.auto); 
+                pointNW.setFlags(pointNW.auto, flags & ~Flags.HIDDEN);
+            }
+            else
+            {
+            if (c instanceof BEnumWritable)
+            {
+                pointEW = (BEnumWritable)c;
+             
+                flags = pointEW.getFlags(pointEW.emergencyOverride); 
+                pointEW.setFlags(pointEW.emergencyOverride, flags & ~Flags.HIDDEN);
+                      
+                flags = pointEW.getFlags(pointEW.emergencyAuto); 
+                pointEW.setFlags(pointEW.emergencyAuto, flags & ~Flags.HIDDEN);
+              
+                flags = pointEW.getFlags(pointEW.set); 
+                pointEW.setFlags(pointEW.set, flags & ~Flags.HIDDEN);
+                //
+                flags = pointEW.getFlags(pointEW.override); 
+                pointEW.setFlags(pointEW.override, flags & ~Flags.HIDDEN);
+                      
+                flags = pointEW.getFlags(pointEW.auto); 
+                pointEW.setFlags(pointEW.auto, flags & ~Flags.HIDDEN);
+            
+            }
+            }
+         }
+      }
+     
+  //Points Hide
+   if((c instanceof BPanelbusBooleanPoint || c instanceof BPanelbusNumericPoint) && c.getName().endsWith(getEndsWith()) && (getHideSpecific() == true || getHideAll() == true) && getUnhideAll() == false) 
+         {
+         
+           if (c instanceof BPanelbusBooleanPoint)
+            {
+                pointBP = (BPanelbusBooleanPoint)c;
+  
+               // Hide Emergency Action Commands
+              /*  flags = pointBP.getFlags(pointBP.emergencyActive); 
+                pointBP.setFlags(pointBP.emergencyActive, flags | Flags.HIDDEN);
+                
+                flags = pointBP.getFlags(pointBP.emergencyInactive); 
+                pointBP.setFlags(pointBP.emergencyInactive, flags | Flags.HIDDEN);
+                
+                flags = pointBP.getFlags(pointBP.emergencyAuto); 
+                pointBP.setFlags(pointBP.emergencyAuto, flags | Flags.HIDDEN);
+              
+                flags = pointBP.getFlags(pointBP.set); 
+                pointBP.setFlags(pointBP.set, flags | Flags.HIDDEN);
+              */  //
+                flags = pointBP.getFlags(pointBP.active); 
+                pointBP.setFlags(pointBP.active, flags | Flags.HIDDEN);
+                
+                flags = pointBP.getFlags(pointBP.inactive); 
+                pointBP.setFlags(pointBP.inactive, flags | Flags.HIDDEN);
+                
+                flags = pointBP.getFlags(pointBP.auto); 
+                pointBP.setFlags(pointBP.auto, flags | Flags.HIDDEN);             
+                 
+            }else{
+             if (c instanceof BPanelbusNumericPoint){
+             
+                pointNP = (BPanelbusNumericPoint)c;
+             
+            /*    flags = pointNP.getFlags(pointNW.emergencyOverride); 
+                pointNP.setFlags(pointNW.emergencyOverride, flags | Flags.HIDDEN);
+                      
+                flags = pointNP.getFlags(pointNW.emergencyAuto); 
+                pointNP.setFlags(pointNW.emergencyAuto, flags | Flags.HIDDEN);
+              
+                flags = pointNP.getFlags(pointNW.set); 
+                pointNP.setFlags(pointNW.set, flags | Flags.HIDDEN);
+             */   //
+                flags = pointNP.getFlags(pointNP.override); 
+                pointNP.setFlags(pointNP.override, flags | Flags.HIDDEN);
+                      
+                flags = pointNP.getFlags(pointNP.auto); 
+                pointNP.setFlags(pointNP.auto, flags | Flags.HIDDEN);
+            }
+           
+         }
+      }
+  //Points UnHide
+   if((c instanceof BPanelbusBooleanPoint || c instanceof BPanelbusNumericPoint) && c.getName().endsWith(getEndsWith()) && (getHideSpecific() == false && getHideAll() == false) && getUnhideAll() == true) 
+         {
+         
+           if (c instanceof BPanelbusBooleanPoint)
+            {
+                pointBP = (BPanelbusBooleanPoint)c;
+  
+               // Hide Emergency Action Commands
+              /*  flags = pointBP.getFlags(pointBP.emergencyActive); 
+                pointBP.setFlags(pointBP.emergencyActive, flags | Flags.HIDDEN);
+                
+                flags = pointBP.getFlags(pointBP.emergencyInactive); 
+                pointBP.setFlags(pointBP.emergencyInactive, flags | Flags.HIDDEN);
+                
+                flags = pointBP.getFlags(pointBP.emergencyAuto); 
+                pointBP.setFlags(pointBP.emergencyAuto, flags | Flags.HIDDEN);
+              
+                flags = pointBP.getFlags(pointBP.set); 
+                pointBP.setFlags(pointBP.set, flags | Flags.HIDDEN);
+              */  //
+                flags = pointBP.getFlags(pointBP.active); 
+                pointBP.setFlags(pointBP.active, flags & ~Flags.HIDDEN);
+                
+                flags = pointBP.getFlags(pointBP.inactive); 
+                pointBP.setFlags(pointBP.inactive, flags & ~Flags.HIDDEN);
+                
+                flags = pointBP.getFlags(pointBP.auto); 
+                pointBP.setFlags(pointBP.auto, flags & ~Flags.HIDDEN);             
+                 
+            }else{
+             if (c instanceof BPanelbusNumericPoint){
+             
+                pointNP = (BPanelbusNumericPoint)c;
+             
+            /*    flags = pointNP.getFlags(pointNW.emergencyOverride); 
+                pointNP.setFlags(pointNW.emergencyOverride, flags | Flags.HIDDEN);
+                      
+                flags = pointNP.getFlags(pointNW.emergencyAuto); 
+                pointNP.setFlags(pointNW.emergencyAuto, flags | Flags.HIDDEN);
+              
+                flags = pointNP.getFlags(pointNW.set); 
+                pointNP.setFlags(pointNW.set, flags | Flags.HIDDEN);
+             */   //
+                flags = pointNP.getFlags(pointNP.override); 
+                pointNP.setFlags(pointNP.override, flags & ~Flags.HIDDEN);
+                      
+                flags = pointNP.getFlags(pointNP.auto); 
+                pointNP.setFlags(pointNP.auto, flags & ~Flags.HIDDEN);
+            }
+           
+         }
+      }
+  
+     
+      // recurse
+      BComponent[] kids = c.getChildComponents();
+      for(int i=0; i<kids.length; ++i)
+        process(kids[i]);
+  
+    }       
+    
+   
+  
+  BBooleanWritable pointBW;
+  BNumericWritable pointNW;
+  BEnumWritable pointEW;
+  
+  BPanelbusBooleanPoint pointBP;
+  BPanelbusNumericPoint pointNP;
+  
+}
